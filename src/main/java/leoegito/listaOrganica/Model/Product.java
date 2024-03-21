@@ -26,19 +26,10 @@ public class Product {
     @Nullable
     private Double globalMediumPrice = null;
 
-//    @Nullable
-//    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-//    @JoinColumn(name="price_id", referencedColumnName = "price_id")
-//    private Price medianPrice;
     @Nullable
     private Double userPrice = null;
 
-//    @JsonIgnore
-//    @Getter(onMethod_=@JsonIgnore)
-//    @JoinTable(name = "product_prices")
-//    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "product")
-//    @JoinColumn(name = "price_id")
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "product", targetEntity = Price.class)
     @Nullable
     private SortedSet<Price> prices = new TreeSet<>();
 
@@ -49,15 +40,19 @@ public class Product {
 //        this.medianPrice = null;
         if(userPrice != null){
             this.userPrice = userPrice;
+            this.prices.add(new Price(userPrice, this));
+        } else {
+            this.userPrice = 0.0;
+            this.addPrice(new Price(0.0, this));
         }
     }
 
     //Methods
-    public void addPrice(Double price) throws IllegalArgumentException{
-        if(price > 1.3 * this.getMaximumValue() || price < 0.7 * this.getMinimumValue()){
+    public void addPrice(Price price) throws IllegalArgumentException{
+        if(price.getPriceValue() > 1.3 * this.getMaximumValue() || price.getPriceValue() < 0.7 * this.getMinimumValue()){
             throw new IllegalArgumentException("Price is too high or too low.");
         }
-        prices.add(new Price(price, this));
+        prices.add(new Price(price.getPriceValue(), this));
 //        prices.add(new Price(null, price, this));
     }
 

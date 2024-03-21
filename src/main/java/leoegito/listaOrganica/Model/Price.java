@@ -20,9 +20,9 @@ public class Price implements Comparable<Price>{
     @NonNull
     private Double priceValue;
 
-    @JoinColumn(name = "product_id", nullable = false)
     @JsonIgnore
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id")
     private Product product;
 
     public Price(Double priceValue, Product product){
