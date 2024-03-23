@@ -29,8 +29,7 @@ public class Product {
     @Nullable
     private Double userPrice = null;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "product", targetEntity = Price.class)
-    @Nullable
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "product", orphanRemoval = true,targetEntity = Price.class)
     private SortedSet<Price> prices = new TreeSet<>();
 
     public Product(String name, String description, Double userPrice){

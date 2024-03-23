@@ -3,6 +3,7 @@ package leoegito.listaOrganica.Service;
 import leoegito.listaOrganica.Model.Product;
 import leoegito.listaOrganica.Repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -37,8 +38,9 @@ public class ProductService {
         return this.productRepository.findAll();
     }
 
-    public Optional<Product> findByID(Long id){
-        return this.productRepository.findById(id);
+    public Product findByID(Long id){
+        Optional<Product> obj = productRepository.findById(id);
+        return obj.get();
     }
 
 }

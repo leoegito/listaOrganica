@@ -1,6 +1,7 @@
 package leoegito.listaOrganica.Controller;
 
 import leoegito.listaOrganica.Model.Product;
+import leoegito.listaOrganica.Service.Exceptions.ResourceNotFoundException;
 import leoegito.listaOrganica.Service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +10,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/product")
@@ -23,14 +25,15 @@ public class ProductController {
 //    }
 
     @GetMapping("/list")
-    public List<Product> getList(){
-        return this.productService.findAll();
+    public ResponseEntity<List<Product>> getList(){
+        List<Product> productList = this.productService.findAll();
+        return ResponseEntity.ok().body(productList);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getByID(@PathVariable("id") Long id) throws Exception{
+    public ResponseEntity<Product> getByID(@PathVariable("id") Long id) throws ResourceNotFoundException{
         return ResponseEntity.ok(this.productService.findByID(id).orElseThrow(
-                () -> new Exception("Product not found.")
+                () -> new ResourceNotFoundException("Product not found.")
         ));
     }
 
@@ -39,7 +42,7 @@ public class ProductController {
         Product obj = this.productService.save(product);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(obj.getId()).toUri();
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.created(uri).build();
     }
 
     @PutMapping("/{id}")
