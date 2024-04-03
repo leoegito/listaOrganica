@@ -1,8 +1,13 @@
 package leoegito.listaOrganica.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
-import lombok.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.SortedSet;
@@ -21,28 +26,39 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "product_id", unique = true)
     private Long id;
+    @NotNull
     private String name;
+
+    @NotNull
     private String description;
     @Nullable
-    private Double globalMediumPrice = null;
+    private Double globalMediumPrice = 0.0;
 
     @Nullable
-    private Double userPrice = null;
+    private Double userPrice = 0.0;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "product", orphanRemoval = true,targetEntity = Price.class)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    @JoinColumn(name = "product_id")
+//    @OneToMany
+//    @JoinTable(
+//            name = "PRODUCT_PRICE",
+//            joinColumns = {@JoinColumn(name="product_id", referencedColumnName = "product_id")},
+//            inverseJoinColumns = {@JoinColumn(name = "price_id", referencedColumnName = "price_id", unique = true)}
+//    )
     private SortedSet<Price> prices = new TreeSet<>();
 
     public Product(String name, String description, Double userPrice){
         this.name = name;
         this.description = description;
-        this.globalMediumPrice = 0.0;
-//        this.medianPrice = null;
         if(userPrice != null){
             this.userPrice = userPrice;
-            this.prices.add(new Price(userPrice, this));
+//            this.prices.add(new Price(userPrice, this));
+            this.addPrice(new Price(this.userPrice));
         } else {
             this.userPrice = 0.0;
-            this.addPrice(new Price(0.0, this));
+//            this.addPrice(new Price(0.0, this));
+            this.enforceAddPrice(this.userPrice);
         }
     }
 
@@ -51,23 +67,37 @@ public class Product {
         if(price.getPriceValue() > 1.3 * this.getMaximumValue() || price.getPriceValue() < 0.7 * this.getMinimumValue()){
             throw new IllegalArgumentException("Price is too high or too low.");
         }
-        prices.add(new Price(price.getPriceValue(), this));
+//        prices.add(new Price(price.getPriceValue(), this));
+
+//        prices.add(new Price(null, price.getPriceValue()));
+//        price.setProduct(this);
+        prices.add(price);
 //        prices.add(new Price(null, price, this));
     }
 
     public void enforceAddPrice(Double price){
 //        prices.add(new Price(null, price, this));
-        prices.add(new Price(price, this));
+//        prices.add(new Price(price, this));
+//        prices.add(new Price(null, price));
+        Price proxyPrice = new Price(price);
+//        proxyPrice.setProduct(this);
+        prices.add(proxyPrice);
     }
 
     //get minimum value by getting the first value of the sorted set
     public Double getMinimumValue(){
-        return this.prices.first().getPriceValue();
+        if(this.prices.size() != 0){
+            return this.prices.first().getPriceValue();
+        }
+        return 0.0D;
     }
 
     //get maximum value by getting the last value of the sorted set
     public Double getMaximumValue(){
-        return this.prices.last().getPriceValue();
+        if(this.prices.size() != 0){
+            return this.prices.last().getPriceValue();
+        }
+        return 0.0D;
     }
 
 

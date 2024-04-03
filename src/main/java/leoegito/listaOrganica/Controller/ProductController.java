@@ -10,7 +10,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/product")
@@ -32,9 +31,10 @@ public class ProductController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Product> getByID(@PathVariable("id") Long id) throws ResourceNotFoundException{
-        return ResponseEntity.ok(this.productService.findByID(id).orElseThrow(
-                () -> new ResourceNotFoundException("Product not found.")
-        ));
+//        return ResponseEntity.ok(this.productService.findByID(id).orElseThrow(
+//                () -> new ResourceNotFoundException("Product not found.")
+//        ));
+        return ResponseEntity.ok(this.productService.findByID(id));
     }
 
     @PostMapping()
