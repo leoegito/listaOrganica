@@ -38,17 +38,14 @@ public class PriceController {
     }
 
     @PostMapping("/product/{product_id}")
-    public ResponseEntity<Price> insert(@PathVariable(value = "product_id") Long productID, @RequestBody Price price){
-//        Price obj = this.priceService.save(price);
-        Price tempPrice = productRepository.findById(productID).map(product -> {
-                    product.getPrices().add(price);
-                    return priceService.save(price);
-                }).orElseThrow(
-                () -> new ResourceNotFoundException(productID));
+    public ResponseEntity<Price> insertPlus(@PathVariable(value = "product_id") Long productID, @RequestBody Price price){
+
+        Price tempPrice = this.priceService.insert(productID, price);
 
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(tempPrice.getId()).toUri();
         return ResponseEntity.created(uri).build();
+
     }
 
     @PutMapping("/{id}")

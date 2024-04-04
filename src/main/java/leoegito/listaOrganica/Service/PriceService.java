@@ -3,6 +3,7 @@ package leoegito.listaOrganica.Service;
 import jakarta.persistence.EntityNotFoundException;
 import leoegito.listaOrganica.Model.Price;
 import leoegito.listaOrganica.Repository.PriceRepository;
+import leoegito.listaOrganica.Repository.ProductRepository;
 import leoegito.listaOrganica.Service.Exceptions.DatabaseException;
 import leoegito.listaOrganica.Service.Exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,11 @@ import java.util.Optional;
 @Service
 public class PriceService {
 
+    @Autowired
     private PriceRepository priceRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
 
     @Autowired
     public PriceService(PriceRepository priceRepository){
@@ -25,6 +30,17 @@ public class PriceService {
 
     public Price save(Price price){
         return this.priceRepository.save(price);
+    }
+
+    public Price insert(Long productID, Price price){
+        Price temp = this.productRepository.findById(productID).map(
+                product -> {
+                    product.getPrices().add(price);
+                    return this.save(price);
+                }).orElseThrow(
+                () -> new ResourceNotFoundException(productID)
+        );
+        return temp;
     }
 
     public Price update(Long id, Price price){
