@@ -25,38 +25,6 @@ public class Price implements Comparable<Price>{
         this.priceValue = value;
     }
 
-//    @JsonIgnore
-//    @ManyToOne(targetEntity = Product.class, fetch = FetchType.LAZY)
-//    @JoinColumn(name = "product_id", insertable = false, updatable = false)
-//    private Product product;
-
-
-    //Teste somente com ID
-//    @ManyToOne(targetEntity = Product.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-//    @JoinColumn(name = "product_id")
-//    private Product product;
-//
-//    @Column(name = "product_id")
-//    private Long productId;
-
-//    public Price(Double priceValue, Product product){
-//        this.priceValue = priceValue;
-//        this.product = product;
-//    }
-
-//    public void setProduct(Product product) {
-//        this.product = product;
-//    }
-//
-//    public Product getProduct(){
-//        return this.product;
-//    }
-
-//    public Price(Double priceValue, Long productId){
-//        this.priceValue = priceValue;
-//        this.productId = productId;
-//    }
-
     @Override
     public int compareTo(Price anotherPrice){
         return Double.compare(this.priceValue, anotherPrice.priceValue);

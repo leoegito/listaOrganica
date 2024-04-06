@@ -59,7 +59,6 @@ public class PriceService {
         } catch (EmptyResultDataAccessException e){
             throw new ResourceNotFoundException(id);
         //TODO - refactor
-        //I don't think this is necessary since Product is the constraint, not Price
         } catch (DataIntegrityViolationException e){
             throw new DatabaseException(e.getMessage());
         }
