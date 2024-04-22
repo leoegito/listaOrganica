@@ -76,4 +76,8 @@ public class ProductService {
         );
     }
 
+    public List<Product> searchProducts(String searchName){
+        return productRepository.findByName(searchName);
+    }
+
 }

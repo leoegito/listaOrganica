@@ -42,8 +42,17 @@ public class ProductListService {
         }
     }
 
-    public ProductList insertProduct(Long id, Product product) {
-        this.productListRepository.getReferenceById(id).getProducts().add(product);
+    public Optional<ProductList> insertProduct(Long id, Product product) {
+        Optional<ProductList> optionalProductList = productListRepository.findById(id);
+//        ProductList productList = this.productListRepository.getReferenceById(id);
+//        productList.getProducts().add(product);
+        if(optionalProductList.isPresent()){
+            ProductList productList = optionalProductList.get();
+            productList.getProducts().add(product);
+            productListRepository.save(productList);
+        }
+//        return productListRepository.save(productList);
+        return optionalProductList;
     }
 
 

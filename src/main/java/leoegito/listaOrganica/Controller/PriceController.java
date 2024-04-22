@@ -38,7 +38,7 @@ public class PriceController {
     }
 
     @PostMapping("/product/{product_id}")
-    public ResponseEntity<Price> insertPlus(@PathVariable(value = "product_id") Long productID, @RequestBody Price price){
+    public ResponseEntity<Price> insertPriceToProduct(@PathVariable(value = "product_id") Long productID, @RequestBody Price price){
 
         Price tempPrice = this.priceService.insert(productID, price);
 
