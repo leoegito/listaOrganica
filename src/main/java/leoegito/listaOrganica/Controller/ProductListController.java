@@ -4,6 +4,7 @@ import leoegito.listaOrganica.Model.Product;
 import leoegito.listaOrganica.Model.ProductList;
 import leoegito.listaOrganica.Service.ProductListService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -44,8 +45,11 @@ public class ProductListController {
 
     @PostMapping("/{id}/add-product")
     public ResponseEntity<ProductList> addProductToList(@PathVariable(value = "id") Long id, @RequestBody Product product){
-        Optional<ProductList> optionalProductList = productListService.
-
+        Optional<ProductList> optionalProductList = productListService.insertProduct(id, product);
+        if(!optionalProductList.isPresent()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(optionalProductList.get());
     }
 
     @PutMapping("/{id}")

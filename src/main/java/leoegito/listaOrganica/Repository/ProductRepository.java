@@ -13,7 +13,7 @@ import java.util.List;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-    @Query("SELECT p FROM Product WHERE p.name LIKE CONCAT('%', :searchName, '%')")
+    @Query("SELECT p FROM Product p WHERE p.name LIKE CONCAT('%', :searchName, '%')")
     List<Product> findByName(@Param("searchName") String searchName);
 
 }
