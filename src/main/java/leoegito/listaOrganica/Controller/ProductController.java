@@ -59,4 +59,10 @@ public class ProductController {
         }
         return ResponseEntity.ok(foundProducts);
     }
+
+    //    @GetMapping("/search")
+//    public ResponseEntity<List<Product>> searchProduct(@RequestParam("searchName") String searchName){
+//        return ResponseEntity.ok(productService.searchProducts(searchName));
+//    }
+
 }
