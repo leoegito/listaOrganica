@@ -2,7 +2,7 @@ package leoegito.listaOrganica.Service.Exceptions;
 
 import java.io.Serial;
 
-public class ResourceNotFoundException  extends RuntimeException{
+public class ResourceNotFoundException extends RuntimeException{
 
     @Serial
     private static final long serialVersionUID = 1L;
