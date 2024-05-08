@@ -30,7 +30,9 @@ public class UserService {
                 () -> new ResourceNotFoundException(id)
         );
     }
-
+    public User searchByUsername(String username){
+        return userRepository.findByUsername(username);
+    }
     public User save(User user){
         return this.userRepository.save(user);
     }
@@ -54,18 +56,18 @@ public class UserService {
         }
     }
 
-    //Working
-    public User updatePassword(Long id, String hashPassword, String authToken){
-        if(authToken != this.userRepository.getReferenceById(id).getAuthToken()){
-            throw new NotAuthorizedException();
-        }
-        try{
-            User user = this.userRepository.getReferenceById(id);
-            user.setPasswordHash(hashPassword);
-            return this.userRepository.save(user);
-        } catch (EntityNotFoundException e){
-            throw new ResourceNotFoundException(id);
-        }
-    }
+    //Working on it
+//    public User updatePassword(Long id, String hashPassword, String authToken){
+//        if(authToken != this.userRepository.getReferenceById(id).getAuthToken()){
+//            throw new NotAuthorizedException();
+//        }
+//        try{
+//            User user = this.userRepository.getReferenceById(id);
+//            user.setPasswordHash(hashPassword);
+//            return this.userRepository.save(user);
+//        } catch (EntityNotFoundException e){
+//            throw new ResourceNotFoundException(id);
+//        }
+//    }
 
 }
