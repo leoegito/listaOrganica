@@ -17,7 +17,7 @@ import java.time.Instant;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class User implements Serializable {
+public class MyUser implements Serializable {
 
 
     private static final long serialVersionUID = 1L;
@@ -27,8 +27,8 @@ public class User implements Serializable {
     private Long id;
 
     private String role;
-
-    private String name;
+    private String username;
+    private String fullname;
     private String email;
     private String phone;
     private String passwordHash;
