@@ -23,4 +23,9 @@ public class ContentController {
     public String handleUserWelcome(){
         return "home_user";
     }
+
+    @GetMapping("/login")
+    public String handleLogins(){
+        return "custom_login";
+    }
 }

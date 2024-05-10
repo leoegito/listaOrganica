@@ -1,9 +1,11 @@
 package leoegito.listaOrganica.Service;
 
 import jakarta.persistence.EntityNotFoundException;
+import leoegito.listaOrganica.Configuration.SecurityConfiguration;
 import leoegito.listaOrganica.Model.MyUser;
 import leoegito.listaOrganica.Repository.MyUserRepository;
 import leoegito.listaOrganica.Service.Exceptions.DatabaseException;
+import leoegito.listaOrganica.Service.Exceptions.NotAuthorizedException;
 import leoegito.listaOrganica.Service.Exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -11,6 +13,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,6 +24,9 @@ public class MyUserService implements UserDetailsService {
 
     @Autowired
     private MyUserRepository myUserRepository;
+
+    @Autowired
+    private final PasswordEncoder passwordEncoder = SecurityConfiguration.passwordEncoder();
 
     public List<MyUser> findAll(){
         return this.myUserRepository.findAll();
@@ -42,7 +48,7 @@ public class MyUserService implements UserDetailsService {
         return org.springframework.security.core.userdetails.User.builder()
                 .username(loadedMyUser.getUsername())
                 .password(loadedMyUser.getPasswordHash())
-                .roles(loadedMyUser.getRole())
+                .roles(this.getRoles(loadedMyUser))
                 .build();
 //        return org.springframework.security.core.userdetails.User.builder()
 //                .username(user.get().getUsername())
@@ -50,6 +56,13 @@ public class MyUserService implements UserDetailsService {
 //                .roles(user.get().getRole())
 //                .build();
 //    }
+    }
+
+    public String[] getRoles(MyUser myUser){
+        if(myUser.getRole() == null){
+            return new String[]{"USER"};
+        }
+        return myUser.getRole().split(",");
     }
 
     public MyUser save(MyUser user){
@@ -76,17 +89,21 @@ public class MyUserService implements UserDetailsService {
     }
 
     //Working on it
-//    public User updatePassword(Long id, String hashPassword, String authToken){
-//        if(authToken != this.userRepository.getReferenceById(id).getAuthToken()){
-//            throw new NotAuthorizedException();
-//        }
-//        try{
-//            User user = this.userRepository.getReferenceById(id);
-//            user.setPasswordHash(hashPassword);
-//            return this.userRepository.save(user);
-//        } catch (EntityNotFoundException e){
-//            throw new ResourceNotFoundException(id);
-//        }
-//    }
+    public MyUser updatePassword(Long id, String hashPassword, String authToken){
+        if(authToken != this.myUserRepository.getReferenceById(id).getAuthToken()){
+            throw new NotAuthorizedException();
+        }
+        try{
+            MyUser user = this.myUserRepository.getReferenceById(id);
+            user.setPasswordHash(hashPassword);
+            return this.myUserRepository.save(user);
+        } catch (EntityNotFoundException e){
+            throw new ResourceNotFoundException(id);
+        }
+    }
+
+    public boolean oldPasswordValidation(MyUser user, String oldPassword){
+        return passwordEncoder.matches(oldPassword, user.getPasswordHash());
+    }
 
 }
