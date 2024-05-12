@@ -2,7 +2,9 @@ package leoegito.listaOrganica.Service;
 
 import jakarta.persistence.EntityNotFoundException;
 import leoegito.listaOrganica.Configuration.SecurityConfiguration;
+import leoegito.listaOrganica.Controller.Exceptions.InvalidPasswordException;
 import leoegito.listaOrganica.Model.MyUser;
+import leoegito.listaOrganica.Model.PasswordChangeRequest;
 import leoegito.listaOrganica.Repository.MyUserRepository;
 import leoegito.listaOrganica.Service.Exceptions.DatabaseException;
 import leoegito.listaOrganica.Service.Exceptions.NotAuthorizedException;
@@ -10,12 +12,15 @@ import leoegito.listaOrganica.Service.Exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.Console;
 import java.util.List;
 import java.util.Optional;
 
@@ -89,17 +94,56 @@ public class MyUserService implements UserDetailsService {
     }
 
     //Working on it
-    public MyUser updatePassword(Long id, String hashPassword, String authToken){
-        if(authToken != this.myUserRepository.getReferenceById(id).getAuthToken()){
-            throw new NotAuthorizedException();
+//    public MyUser updatePassword(Long id, String hashPassword, String authToken){
+//        if(authToken != this.myUserRepository.getReferenceById(id)){
+//            throw new NotAuthorizedException();
+//        }
+//        try{
+//            MyUser user = this.myUserRepository.getReferenceById(id);
+//            user.setPasswordHash(hashPassword);
+//            return this.myUserRepository.save(user);
+//        } catch (EntityNotFoundException e){
+//            throw new ResourceNotFoundException(id);
+//        }
+//    }
+//    public String changeUserPassword(String passwordChangeRequest) {
+//        Authentication currentUser = SecurityContextHolder.getContext().getAuthentication();
+//        String username = currentUser.getName();
+//
+//        UserDetails userDetails = this.loadUserByUsername(username);
+//        if (!passwordEncoder.matches(passwordChangeRequest.getOldPassword(), userDetails.getPassword())) {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Senha atual incorreta");
+//        }
+//        if(oldPasswordValidation(userDetails, userDetails.getPassword()))
+//
+//        User user = userRepository.findByUsername(username);
+//        user.setPassword(passwordEncoder.encode(passwordChangeRequest.getNewPassword()));
+//        userRepository.save(user);
+//
+//        return ResponseEntity.ok("Senha alterada com sucesso");
+//    }
+
+    public String changeUserPassword(PasswordChangeRequest passwordChangeRequest) throws InvalidPasswordException {
+        Authentication currentUser = SecurityContextHolder.getContext().getAuthentication();
+        String username = currentUser.getName();
+        //Debug
+//        System.out.println("Username:" +username);
+
+        MyUser user = this.myUserRepository.findByUsername(username);
+        if (!oldPasswordValidation(user, passwordChangeRequest.getOldPassword())) {
+            throw new InvalidPasswordException("Senha antiga incorreta.");
         }
-        try{
-            MyUser user = this.myUserRepository.getReferenceById(id);
-            user.setPasswordHash(hashPassword);
-            return this.myUserRepository.save(user);
-        } catch (EntityNotFoundException e){
-            throw new ResourceNotFoundException(id);
-        }
+
+        //Debug
+//        System.out.println(passwordChangeRequest.toString());
+        user.setPasswordHash(passwordEncoder.encode(passwordChangeRequest.getNewPassword()));
+
+        //Debug
+//        System.out.println(user.toString());
+
+        this.myUserRepository.save(user);
+
+        return "Senha alterada com sucesso";
     }
 
     public boolean oldPasswordValidation(MyUser user, String oldPassword){
