@@ -21,6 +21,8 @@ public class ProductList {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String title;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @Nullable
     private Set<Product> products = new HashSet<>();

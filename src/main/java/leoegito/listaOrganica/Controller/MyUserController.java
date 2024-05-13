@@ -5,6 +5,7 @@ import leoegito.listaOrganica.Controller.Exceptions.InvalidPasswordException;
 import leoegito.listaOrganica.Model.MyUser;
 import leoegito.listaOrganica.Model.PasswordChangeRequest;
 import leoegito.listaOrganica.Model.Product;
+import leoegito.listaOrganica.Model.ProductList;
 import leoegito.listaOrganica.Repository.MyUserRepository;
 import leoegito.listaOrganica.Service.Exceptions.ResourceNotFoundException;
 import leoegito.listaOrganica.Service.MyUserService;
@@ -44,6 +45,11 @@ public class MyUserController {
     @GetMapping("/{id}")
     public ResponseEntity<MyUser> getByID(@PathVariable("id") Long id) throws ResourceNotFoundException {
         return ResponseEntity.ok(this.myUserService.findByID(id));
+    }
+
+    @PutMapping("/{id}/productList")
+    public ResponseEntity<MyUser> addProductListToMyUser(@PathVariable Long id, @RequestBody ProductList productList) {
+        return ResponseEntity.ok(myUserService.addProductListToMyUser(id, productList));
     }
 
     @PutMapping("/changePassword")

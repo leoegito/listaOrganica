@@ -5,6 +5,7 @@ import leoegito.listaOrganica.Configuration.SecurityConfiguration;
 import leoegito.listaOrganica.Controller.Exceptions.InvalidPasswordException;
 import leoegito.listaOrganica.Model.MyUser;
 import leoegito.listaOrganica.Model.PasswordChangeRequest;
+import leoegito.listaOrganica.Model.ProductList;
 import leoegito.listaOrganica.Repository.MyUserRepository;
 import leoegito.listaOrganica.Service.Exceptions.DatabaseException;
 import leoegito.listaOrganica.Service.Exceptions.NotAuthorizedException;
@@ -91,6 +92,14 @@ public class MyUserService implements UserDetailsService {
         } catch (DataIntegrityViolationException e){
             throw new DatabaseException(e.getMessage());
         }
+    }
+
+    public MyUser addProductListToMyUser(Long id, ProductList productList) {
+        MyUser myUser = myUserRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("MyUser not found"));
+        myUser.getProductLists().add(productList);
+//        productList.setMyUser(myUser);
+        //Better not to return the entire user... Work on it later.
+        return myUserRepository.save(myUser);
     }
 
     //Working on it
