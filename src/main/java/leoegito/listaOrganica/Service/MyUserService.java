@@ -136,7 +136,7 @@ public class MyUserService implements UserDetailsService {
         Authentication currentUser = SecurityContextHolder.getContext().getAuthentication();
         String username = currentUser.getName();
         //Debug
-//        System.out.println("Username:" +username);
+//      System.out.println("Username:" +username);
 
         MyUser user = this.myUserRepository.findByUsername(username);
         if (!oldPasswordValidation(user, passwordChangeRequest.getOldPassword())) {
@@ -144,11 +144,11 @@ public class MyUserService implements UserDetailsService {
         }
 
         //Debug
-//        System.out.println(passwordChangeRequest.toString());
+//      System.out.println(passwordChangeRequest.toString());
         user.setPasswordHash(passwordEncoder.encode(passwordChangeRequest.getNewPassword()));
 
         //Debug
-//        System.out.println(user.toString());
+//      System.out.println(user.toString());
 
         this.myUserRepository.save(user);
 

@@ -38,14 +38,15 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
+                .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(registry->{
-                    registry.requestMatchers("/home", "/users/**", "/h2-console/**").permitAll();
+                    registry.requestMatchers("/home", "/users/register", "/h2-console/**").permitAll();
                     registry.requestMatchers("/admin/**").hasRole("ADMIN");
                     registry.requestMatchers("/user/**").hasRole("USER");
 //                    registry.requestMatchers("/product","/price","/shoppingList").hasAnyRole();
 //                    registry.requestMatchers("/h2-console/**").hasRole("ADMIN");
-                    registry.anyRequest().authenticated();
+                    registry.requestMatchers("/product/**", "/shoppingList/**", "/price/**", "/users/**",).authenticated();
                 })
 //                .formLogin(AbstractAuthenticationFilterConfigurer::permitAll)
                 .httpBasic(Customizer.withDefaults())
