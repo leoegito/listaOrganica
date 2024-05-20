@@ -46,7 +46,7 @@ public class SecurityConfiguration {
                     registry.requestMatchers("/user/**").hasRole("USER");
 //                    registry.requestMatchers("/product","/price","/shoppingList").hasAnyRole();
 //                    registry.requestMatchers("/h2-console/**").hasRole("ADMIN");
-                    registry.requestMatchers("/product/**", "/shoppingList/**", "/price/**", "/users/**",).authenticated();
+                    registry.requestMatchers("/product/**", "/shoppingList/**", "/price/**", "/users/**").authenticated();
                 })
 //                .formLogin(AbstractAuthenticationFilterConfigurer::permitAll)
                 .httpBasic(Customizer.withDefaults())
