@@ -10,5 +10,6 @@ import java.util.Optional;
 public interface MyUserRepository extends JpaRepository<MyUser, Long> {
 
 //    @Query("SELECT u FROM User u WHERE UPPER(u.username) LIKE UPPER(:userName)")
-    MyUser findByUsername(String username);
+
+    Optional<MyUser> findByUsername(String username);
 }

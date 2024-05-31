@@ -9,6 +9,7 @@ import leoegito.listaOrganica.Model.ProductList;
 import leoegito.listaOrganica.Repository.MyUserRepository;
 import leoegito.listaOrganica.Service.Exceptions.ResourceNotFoundException;
 import leoegito.listaOrganica.Service.MyUserService;
+import leoegito.listaOrganica.Service.ProductListService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600)
 @RestController
 @RequestMapping("/users")
 public class MyUserController {
@@ -28,6 +29,9 @@ public class MyUserController {
 
     @Autowired
     private MyUserService myUserService;
+
+    @Autowired
+    private ProductListService productListService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -52,6 +56,22 @@ public class MyUserController {
     @PutMapping("/{id}/productList")
     public ResponseEntity<MyUser> addProductListToMyUser(@PathVariable Long id, @RequestBody ProductList productList) {
         return ResponseEntity.ok(myUserService.addProductListToMyUser(id, productList));
+    }
+
+    @PutMapping("/{id}/productList/{id}")
+    public ResponseEntity<MyUser> addProductListToMyUser(@PathVariable Long id, @PathVariable Long productListID) {
+        ProductList productList = this.productListService.findByID(productListID);
+        return ResponseEntity.ok(myUserService.addProductListToMyUser(id, productList));
+    }
+
+    @GetMapping("{id}/productList/list")
+    public ResponseEntity<List<ProductList>> getProductLists(@PathVariable Long id){
+        return ResponseEntity.ok(myUserService.getAllProductLists(id));
+    }
+
+    @GetMapping("{userID}/productList/{listID}")
+    public ResponseEntity<ProductList> getProductList(@PathVariable Long userID, @PathVariable Long listID){
+        return ResponseEntity.ok(myUserService.getProductList(userID,listID));
     }
 
     @PutMapping("/changePassword")

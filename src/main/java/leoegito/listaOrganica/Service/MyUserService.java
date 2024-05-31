@@ -3,6 +3,10 @@ package leoegito.listaOrganica.Service;
 import jakarta.persistence.EntityNotFoundException;
 import leoegito.listaOrganica.Configuration.SecurityConfiguration;
 import leoegito.listaOrganica.Controller.Exceptions.InvalidPasswordException;
+import leoegito.listaOrganica.Controller.Exceptions.StandardError;
+import leoegito.listaOrganica.DTO.CredentialsDto;
+import leoegito.listaOrganica.DTO.UserDto;
+import leoegito.listaOrganica.Mappers.UserMapper;
 import leoegito.listaOrganica.Model.MyUser;
 import leoegito.listaOrganica.Model.PasswordChangeRequest;
 import leoegito.listaOrganica.Model.ProductList;
@@ -13,6 +17,7 @@ import leoegito.listaOrganica.Service.Exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,6 +27,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.Console;
+import java.nio.CharBuffer;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,7 +38,30 @@ public class MyUserService implements UserDetailsService {
     private MyUserRepository myUserRepository;
 
     @Autowired
+    private UserMapper userMapper;
+
+    @Autowired
     private final PasswordEncoder passwordEncoder = SecurityConfiguration.passwordEncoder();
+
+
+    public UserDto login(CredentialsDto credentialsDto) throws ResourceNotFoundException{
+//        String username = credentialsDto.username().toString();
+////        Optional<MyUser> user = Optional.ofNullable(this.myUserRepository.findByUsername(credentialsDto.username()))
+////                .orElseThrow(() -> new UsernameNotFoundException(username));
+//        Optional<MyUser> myUser = this.myUserRepository.findByUsername(credentialsDto.username());
+////        user.orElseThrow(() -> new ResourceNotFoundException("Usuário não existe"));
+        MyUser myUser = myUserRepository.findByUsername(credentialsDto.username()).orElseThrow(
+                () -> new UsernameNotFoundException(credentialsDto.username())
+        );
+
+        if(this.passwordEncoder.matches(CharBuffer.wrap(credentialsDto.password()),
+                myUser.getPasswordHash())){
+            return this.userMapper.toUserDto(myUser);
+        } else {
+            throw new InvalidPasswordException("Senha inválida", HttpStatus.BAD_REQUEST);
+        }
+
+    }
 
     public List<MyUser> findAll(){
         return this.myUserRepository.findAll();
@@ -44,13 +73,16 @@ public class MyUserService implements UserDetailsService {
                 () -> new ResourceNotFoundException(id)
         );
     }
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException{
-        Optional<MyUser> user = Optional.ofNullable(myUserRepository.findByUsername(username));
-        if(user.isEmpty()){
-            throw new UsernameNotFoundException(username);
-        }
-        MyUser loadedMyUser = user.get();
+        MyUser user = myUserRepository.findByUsername(username).orElseThrow(
+                () -> new UsernameNotFoundException(username)
+        );
+//        if(user.isEmpty()){
+//            throw new UsernameNotFoundException(username);
+//        }
+        MyUser loadedMyUser = user;
         return org.springframework.security.core.userdetails.User.builder()
                 .username(loadedMyUser.getUsername())
                 .password(loadedMyUser.getPasswordHash())
@@ -92,6 +124,21 @@ public class MyUserService implements UserDetailsService {
         } catch (DataIntegrityViolationException e){
             throw new DatabaseException(e.getMessage());
         }
+    }
+
+    public List<ProductList> getAllProductLists(Long id){
+        MyUser myUser = myUserRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário inválido."));
+        return myUser.getProductLists();
+    }
+
+    public ProductList getProductList(Long userID, Long listID){
+        MyUser myUser = myUserRepository.findById(userID).orElseThrow(() -> new ResourceNotFoundException("Usuário inválido."));
+        for(ProductList shoppingList :  myUser.getProductLists()){
+            if(shoppingList.getId() == listID){
+                return shoppingList;
+            }
+        }
+        return null;
     }
 
     public MyUser addProductListToMyUser(Long id, ProductList productList) {
@@ -138,9 +185,9 @@ public class MyUserService implements UserDetailsService {
         //Debug
 //      System.out.println("Username:" +username);
 
-        MyUser user = this.myUserRepository.findByUsername(username);
+        MyUser user = this.myUserRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username));
         if (!oldPasswordValidation(user, passwordChangeRequest.getOldPassword())) {
-            throw new InvalidPasswordException("Senha antiga incorreta.");
+            throw new InvalidPasswordException("Senha antiga incorreta.", HttpStatus.BAD_REQUEST);
         }
 
         //Debug

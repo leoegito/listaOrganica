@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600)
 @Controller
 @RequestMapping("/")
 public class ContentController {
@@ -26,8 +26,8 @@ public class ContentController {
         return "home_user";
     }
 
-    @GetMapping("/login")
-    public String handleLogins(){
-        return "custom_login";
-    }
+//    @GetMapping("/login")
+//    public String handleLogins(){
+//        return "custom_login";
+//    }
 }

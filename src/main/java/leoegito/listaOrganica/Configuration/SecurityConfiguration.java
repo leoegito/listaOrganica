@@ -6,73 +6,71 @@ import leoegito.listaOrganica.Service.MyUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractAuthenticationFilterConfigurer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
 
-//    protected void configure(HttpSecurity httpSecurity) throws Exception{
-//        httpSecurity
-//                .csrf()
-//                .disable()
-//                .authorizeHttpRequests()
-//                .requestMatchers();
-//    }
-
     @Autowired
     private MyUserService myUserService;
 
+//    HeaderHttpSessionStrategy headerHttpSessionStrategy;
+
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        return httpSecurity
-                .cors(Customizer.withDefaults())
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        return http
+                .cors(cors -> cors.configurationSource(request -> {
+                    var corsConfiguration = new org.springframework.web.cors.CorsConfiguration();
+                    corsConfiguration.setAllowedOrigins(List.of("http://localhost:4200"));
+                    corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                    corsConfiguration.setAllowedHeaders(List.of("*"));
+                    return corsConfiguration;
+                }))
+//                .cors().and()
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(registry->{
-                    registry.requestMatchers("/home", "/users/register", "/h2-console/**").permitAll();
+//                .sessionManagement(customizer -> customizer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(registry -> {
+                    registry.requestMatchers("/home", "/product", "/product/**", "/users/register", "/h2-console/**").permitAll();
                     registry.requestMatchers("/admin/**").hasRole("ADMIN");
                     registry.requestMatchers("/user/**").hasRole("USER");
-//                    registry.requestMatchers("/product","/price","/shoppingList").hasAnyRole();
-//                    registry.requestMatchers("/h2-console/**").hasRole("ADMIN");
-                    registry.requestMatchers("/product/**", "/shoppingList/**", "/price/**", "/users/**").authenticated();
+                    registry.requestMatchers("/shoppingList/**", "/price/**", "/users/**").authenticated();
                 })
-//                .formLogin(AbstractAuthenticationFilterConfigurer::permitAll)
+//                .formLogin(httpSecurityFormLoginConfigurer -> httpSecurityFormLoginConfigurer
+//                        .loginPage("/login")
+//                        .successHandler(new AuthenticationSuccessHandler())
+//                        .permitAll()
+//                )
                 .httpBasic(Customizer.withDefaults())
-                .formLogin(httpSecurityFormLoginConfigurer -> {
-                    httpSecurityFormLoginConfigurer
-                            .loginPage("/login")
-                            .successHandler(new AuthenticationSuccessHandler())
-                            .permitAll();
-                })
                 .build();
     }
-
-//    @Bean
-//    public UserDetailsService userDetailsService(){
-//        UserDetails normalUser = User.builder()
-//                .username("normaluser")
-//                .password("$2a$12$eBmGWw7KkWKjoLYEOwhLm.lZlqyoonqKJ2kGMsrLQayFf4juJ1fp6")
-//                .roles("USER")
-//                .build();
-//        UserDetails adminUser = User.builder()
-//                .username("admin")
-//                .password("$2a$12$2vbiEqAh5.5rCLg6sh1/W.tkou36tBjO1xOOGF8rdjbHxiYrUVcZe")
-//                .roles("ADMIN","USER")
-//                .build();
-//        return new InMemoryUserDetailsManager(normalUser, adminUser);
-//    }
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
@@ -91,6 +89,11 @@ public class SecurityConfiguration {
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }
+
+//    @Bean
+//    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+//        return authenticationConfiguration.getAuthenticationManager();
+//    }
 
     @Bean
     public static PasswordEncoder passwordEncoder(){
