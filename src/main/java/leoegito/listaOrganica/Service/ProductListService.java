@@ -1,8 +1,11 @@
 package leoegito.listaOrganica.Service;
 
 import jakarta.persistence.EntityNotFoundException;
+import leoegito.listaOrganica.Model.ListItem;
+import leoegito.listaOrganica.Model.PK.ListItemPK;
 import leoegito.listaOrganica.Model.Product;
 import leoegito.listaOrganica.Model.ProductList;
+import leoegito.listaOrganica.Repository.ListItemRepository;
 import leoegito.listaOrganica.Repository.ProductListRepository;
 import leoegito.listaOrganica.Service.Exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +19,12 @@ public class ProductListService {
 
     @Autowired
     private ProductListRepository productListRepository;
+
+    @Autowired
+    private ListItemRepository listItemRepository;
+
+    @Autowired
+    private ProductService productService;
 
     public List<ProductList> findAll() {
         return this.productListRepository.findAll();
@@ -42,16 +51,30 @@ public class ProductListService {
         }
     }
 
-    public Optional<ProductList> insertProduct(Long id, Product product) {
+    public Optional<ProductList> insertProduct(Long id, Product product) throws ResourceNotFoundException {
         Optional<ProductList> optionalProductList = productListRepository.findById(id);
+//        if(optionalProductList.isPresent()){
+//
+//        }
+//        ProductList proxyList = optionalProductList.orElseThrow();
+
+//
 //        ProductList productList = this.productListRepository.getReferenceById(id);
 //        productList.getProducts().add(product);
+        Product realProduct = this.productService.findByID(product.getId());
+
         if(optionalProductList.isPresent()){
             ProductList productList = optionalProductList.get();
-            productList.getProducts().add(product);
+//            ListItemPK listItemPK = new ListItemPK(productList, product);
+            ListItem listItem = new ListItem(productList, realProduct, 1, realProduct.getMedian());
+            this.listItemRepository.save(listItem);
+            productList.getListItems().add(listItem);
             productListRepository.save(productList);
+        } else {
+            throw new RuntimeException("DEU MERDA AQUI Ó");
         }
 //        return productListRepository.save(productList);
+//        Optional<ProductList> optionalProductList = productListRepository.findById(id);
         return optionalProductList;
     }
 

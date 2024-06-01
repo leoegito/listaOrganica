@@ -58,11 +58,20 @@ public class MyUserController {
         return ResponseEntity.ok(myUserService.addProductListToMyUser(id, productList));
     }
 
-    @PutMapping("/{id}/productList/{id}")
+    @PutMapping("/{id}/productList/{productListID}")
     public ResponseEntity<MyUser> addProductListToMyUser(@PathVariable Long id, @PathVariable Long productListID) {
         ProductList productList = this.productListService.findByID(productListID);
         return ResponseEntity.ok(myUserService.addProductListToMyUser(id, productList));
     }
+
+    //TODO - Deletar lista inteira
+//    @DeleteMapping("/{id}/productList/{productListID}")
+//    public void deleteProductList(@PathVariable Long id, @PathVariable Long productListID) {
+//        ProductList productList = this.productListService.findByID(productListID);
+//        return ResponseEntity.ok(myUserService.addProductListToMyUser(id, productList));
+//    }
+
+    //TODO - Deletar apenas um listItem
 
     @GetMapping("{id}/productList/list")
     public ResponseEntity<List<ProductList>> getProductLists(@PathVariable Long id){

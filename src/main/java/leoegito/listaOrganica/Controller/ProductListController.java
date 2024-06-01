@@ -1,5 +1,6 @@
 package leoegito.listaOrganica.Controller;
 
+import leoegito.listaOrganica.Model.ListItem;
 import leoegito.listaOrganica.Model.Product;
 import leoegito.listaOrganica.Model.ProductList;
 import leoegito.listaOrganica.Service.ProductListService;
@@ -54,9 +55,9 @@ public class ProductListController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProductList> update(@PathVariable(value = "id") Long id, Product product){
+    public ResponseEntity<ProductList> update(@PathVariable(value = "id") Long id, ListItem listItem){
         ProductList list = this.productListService.findByID(id);
-        list.getProducts().add(product);
+        list.getListItems().add(listItem);
         return ResponseEntity.ok().body(list);
     }
 

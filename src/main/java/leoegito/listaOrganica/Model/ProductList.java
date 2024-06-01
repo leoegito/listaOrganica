@@ -1,6 +1,7 @@
 package leoegito.listaOrganica.Model;
 
 
+import com.fasterxml.jackson.annotation.*;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
@@ -12,9 +13,10 @@ import java.util.Set;
 @Table(name="tb_product_list")
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = "listItems")
 @Getter
 @Setter
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class ProductList {
 
     @Id
@@ -23,9 +25,15 @@ public class ProductList {
 
     private String title;
 
+//    @ManyToMany(fetch = FetchType.LAZY)
+//    @Nullable
+//    private Set<Product> products = new HashSet<>();
     @ManyToMany(fetch = FetchType.LAZY)
     @Nullable
-    private Set<Product> products = new HashSet<>();
+//    @JsonBackReference
+    @JsonIdentityReference(alwaysAsId = true) // Adicione esta linha
+    @JsonProperty("listItems") // Adicione esta linha
+    private Set<ListItem> listItems = new HashSet<>();
 
     //Maybe its better to just store the two results in two attributes
 
@@ -33,9 +41,13 @@ public class ProductList {
         Double total = 0.0;
         Double medianTotal = 0.0;
         Double[] results = new Double[2];
-        for(Product product : this.products){
-            total += product.getMinimumValue();
-            medianTotal += product.getMedian();
+//        for(Product product : this.products){
+//            total += product.getMinimumValue();
+//            medianTotal += product.getMedian();
+//        }
+        for(ListItem listItem : this.listItems){
+            total += listItem.getSubTotal();
+            medianTotal += (listItem.getProduct().getMedian() * listItem.getQuantity());
         }
         results[0] = total;
         results[1] = medianTotal;

@@ -1,11 +1,11 @@
 package leoegito.listaOrganica.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import leoegito.listaOrganica.Model.PK.ListItemPK;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
+import java.util.Objects;
 
 @Entity
 @Table(name = "tb_list_item")
@@ -33,5 +33,37 @@ public class ListItem {
         this.price = price;
     }
 
+    public ProductList getProductList(){
+        return this.id.getProductList();
+    }
+
+    public void setProductList(ProductList productList){
+        this.id.setProductList(productList);
+    }
+
+    public Product getProduct(){
+        return this.id.getProduct();
+    }
+
+    public void setProduct(Product product){
+        this.id.setProduct(product);
+    }
+
+    public Double getSubTotal(){
+        return this.price * this.quantity;
+    }
+
+    @Override
+    public int hashCode(){
+        return Objects.hash(this.id);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ListItem listItem = (ListItem) o;
+        return Objects.equals(id, listItem.id);
+    }
 
 }

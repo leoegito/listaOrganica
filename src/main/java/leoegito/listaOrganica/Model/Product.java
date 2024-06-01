@@ -1,14 +1,12 @@
 package leoegito.listaOrganica.Model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 
 @Entity
@@ -17,7 +15,8 @@ import java.util.TreeSet;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = "listItems")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Product {
 
     @Id
@@ -34,6 +33,12 @@ public class Product {
 
     @Nullable
     private Double userPrice = 0.0;
+
+    @OneToMany(mappedBy = "id.product")
+//    @JsonManagedReference
+//    @JsonBackReference
+    @JsonIdentityReference(alwaysAsId = true) // Adicione esta linha
+    private Set<ListItem> listItems = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
@@ -123,6 +128,15 @@ public class Product {
             int mid2 = size / 2;
             return (priceList.get(mid1) + priceList.get(mid2)) / 2.0;
         }
+    }
+
+    @JsonIgnore
+    public Set<ProductList> getProductLists(){
+        Set<ProductList> set = new HashSet<>();
+        for(ListItem x : listItems){
+            set.add(x.getProductList());
+        }
+        return set;
     }
 
 
