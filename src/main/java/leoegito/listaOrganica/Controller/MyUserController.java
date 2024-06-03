@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @CrossOrigin(origins = "http://localhost:4200", maxAge = 3600)
@@ -72,13 +73,20 @@ public class MyUserController {
 //    }
 
     //TODO - Deletar apenas um listItem
+    // A deleção deve ser feita apenas dentro da conta do usuário,
+    // não afetando a lista original, que pode ser uma receita
+//    @DeleteMapping("{id}/productList/{productListID}")
+//    public void deleteProductListFromUser(@PathVariable Long id, @PathVariable Long productListID){
+//        this.myUserService.removeList(id, productListID);
+//    }
 
-    @GetMapping("{id}/productList/list")
+
+    @GetMapping("/{id}/productList/list")
     public ResponseEntity<List<ProductList>> getProductLists(@PathVariable Long id){
         return ResponseEntity.ok(myUserService.getAllProductLists(id));
     }
 
-    @GetMapping("{userID}/productList/{listID}")
+    @GetMapping("/{userID}/productList/{listID}")
     public ResponseEntity<ProductList> getProductList(@PathVariable Long userID, @PathVariable Long listID){
         return ResponseEntity.ok(myUserService.getProductList(userID,listID));
     }

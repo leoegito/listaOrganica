@@ -3,6 +3,7 @@ package leoegito.listaOrganica.Controller;
 import leoegito.listaOrganica.Model.ListItem;
 import leoegito.listaOrganica.Model.Product;
 import leoegito.listaOrganica.Model.ProductList;
+import leoegito.listaOrganica.Repository.ListItemRepository;
 import leoegito.listaOrganica.Service.ProductListService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @CrossOrigin(origins = "http://localhost:4200", maxAge = 3600)
 @RestController
@@ -21,6 +23,9 @@ public class ProductListController {
 
     @Autowired
     private ProductListService productListService;
+
+    @Autowired
+    private ListItemRepository listItemRepository;
 
     @GetMapping("/list")
     public ResponseEntity<List<ProductList>> findAll(){
@@ -59,6 +64,62 @@ public class ProductListController {
         ProductList list = this.productListService.findByID(id);
         list.getListItems().add(listItem);
         return ResponseEntity.ok().body(list);
+    }
+
+//    @PutMapping("/{id}/changeQuantity")
+//    public ResponseEntity<ProductList> changeQuantity(@PathVariable Long id, @RequestBody ListItem listItem){
+//        ProductList productList = this.productListService.findByID(id);
+//        Set<ListItem> items = productList.getListItems();
+//        for(ListItem item : items){
+//            if(item.getId().getProduct().getId() == listItem.getProduct().getId()){
+//                item.setQuantity((item.getQuantity()));
+//            }
+//        }
+//        return ResponseEntity.ok().body(productList);
+//    }
+
+    @PutMapping("/{id}/addQuantity")
+    public ResponseEntity<ProductList> changeQuantity(@PathVariable Long id, @RequestBody Product product){
+        ProductList productList = this.productListService.findByID(id);
+        List<ListItem> items = productList.getListItems();
+
+        for(ListItem item : items){
+            if(item.getId().getProduct().getId().equals(product.getId())){
+                item.setQuantity((item.getQuantity()+1));
+            }
+        }
+        this.productListService.save(productList);
+        return ResponseEntity.ok().body(productList);
+    }
+
+    @PutMapping("/{listId}/subtractQuantity")
+    public ResponseEntity<ProductList> subtractQuantity(@PathVariable Long listId, @RequestBody Product product) {
+        ProductList productList = productListService.findByID(listId);
+        List<ListItem> items = productList.getListItems();
+        ListItem itemToRemove = null;
+
+        for (ListItem item : items) {
+            if (item.getId().getProduct().getId().equals(product.getId())) {
+                item.setQuantity(item.getQuantity() - 1);
+                if (item.getQuantity() == 0) {
+                    itemToRemove = item;
+                }
+                break; // Já encontramos o item, então podemos sair do loop
+            }
+        }
+
+        if (itemToRemove != null) {
+            items.remove(itemToRemove);
+        }
+
+        productListService.save(productList);
+        return ResponseEntity.ok().body(productList);
+    }
+
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id){
+        this.productListService.delete(id);
     }
 
 

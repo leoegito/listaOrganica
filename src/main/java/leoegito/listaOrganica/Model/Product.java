@@ -15,7 +15,9 @@ import java.util.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = "listItems")
+@EqualsAndHashCode(exclude = "listItems")//abaixo é o correto
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = Product.class)
+@JsonIdentityReference(alwaysAsId = false)
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Product {
 
@@ -37,8 +39,10 @@ public class Product {
     @OneToMany(mappedBy = "id.product")
 //    @JsonManagedReference
 //    @JsonBackReference
-    @JsonIdentityReference(alwaysAsId = true) // Adicione esta linha
-    private Set<ListItem> listItems = new HashSet<>();
+//    @JsonIdentityReference(alwaysAsId = true) // Adicione esta linha
+    @JsonIgnore
+//    @JsonManagedReference
+    private Set<ListItem> listItems = new LinkedHashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore

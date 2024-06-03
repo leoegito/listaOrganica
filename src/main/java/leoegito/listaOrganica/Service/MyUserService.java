@@ -149,6 +149,13 @@ public class MyUserService implements UserDetailsService {
         return myUserRepository.save(myUser);
     }
 
+//    public void removeList(Long id, Long productListID){
+//        MyUser user = this.myUserRepository.findById(id).orElseThrow(
+//                () -> new ResourceNotFoundException(id)
+//        );
+//        user.get
+//    }
+
     //Working on it
 //    public MyUser updatePassword(Long id, String hashPassword, String authToken){
 //        if(authToken != this.myUserRepository.getReferenceById(id)){

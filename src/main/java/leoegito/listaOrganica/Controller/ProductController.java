@@ -9,7 +9,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.TreeSet;
 
 @CrossOrigin(origins = "http://localhost:4200", maxAge = 3600)
 @RestController
@@ -54,6 +57,10 @@ public class ProductController {
 
     @GetMapping("/search")
     public ResponseEntity<List<Product>> searchProducts(@RequestParam String searchName){
+        // Mock response for testing
+//        List<Product> products = new ArrayList<>();
+//        products.add(new Product(1L, "Maçã", "Maçã Orgânica", 0.0, 0.0, null, null));
+//        products.add(new Product(2L, "Banana", "Banana Orgânica", 0.0, 0.0, null, null));
         List<Product> foundProducts = productService.searchProducts(searchName);
         if(foundProducts.isEmpty()){
             return ResponseEntity.noContent().build();
@@ -61,9 +68,37 @@ public class ProductController {
         return ResponseEntity.ok(foundProducts);
     }
 
+
+    // Novo endpoint para receber o parâmetro de pesquisa como JSON
+    @PostMapping("/json/search")
+    public List<Product> searchProducts(@RequestBody SearchRequest searchRequest) {
+        String query = searchRequest.getQuery();
+        // Mock response for testing
+        List<Product> products = new ArrayList<>();
+        if (query.toLowerCase().contains("maçã")) {
+            products.add(new Product(1L, "Maçã", "Maçã Orgânica", 0.0, 0.0, new HashSet<>(), new TreeSet<>()));
+        }
+        if (query.toLowerCase().contains("banana")) {
+            products.add(new Product(2L, "Banana", "Banana Orgânica", 0.0, 0.0, new HashSet<>(), new TreeSet<>()));
+        }
+        return products;
+    }
+
     //    @GetMapping("/search")
 //    public ResponseEntity<List<Product>> searchProduct(@RequestParam("searchName") String searchName){
 //        return ResponseEntity.ok(productService.searchProducts(searchName));
 //    }
 
+}
+
+class SearchRequest {
+    private String query;
+
+    public String getQuery() {
+        return query;
+    }
+
+    public void setQuery(String query) {
+        this.query = query;
+    }
 }

@@ -15,6 +15,7 @@ public class WebConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
+                        .allowCredentials(true)
                         .allowedOrigins("http://localhost:4200")
 //                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedMethods(HttpMethod.GET.name(),
@@ -23,7 +24,11 @@ public class WebConfig {
                                 HttpMethod.DELETE.name(),
                                 HttpMethod.OPTIONS.name())
                         .allowedHeaders(HttpHeaders.CONTENT_TYPE,
-                                HttpHeaders.AUTHORIZATION
+                                HttpHeaders.AUTHORIZATION,
+                                HttpHeaders.ACCEPT,
+                                HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS,
+                                HttpHeaders.LOCATION,
+                                HttpHeaders.CONTENT_LOCATION
                                 );
 //                        .allowCredentials(true);
             }

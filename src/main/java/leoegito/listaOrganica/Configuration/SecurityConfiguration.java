@@ -6,6 +6,8 @@ import leoegito.listaOrganica.Service.MyUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -52,16 +54,28 @@ public class SecurityConfiguration {
                     corsConfiguration.setAllowedOrigins(List.of("http://localhost:4200"));
                     corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                     corsConfiguration.setAllowedHeaders(List.of("*"));
+                    corsConfiguration.addExposedHeader(HttpHeaders.LOCATION);
+                    corsConfiguration.setAllowCredentials(true);
                     return corsConfiguration;
                 }))
 //                .cors().and()
                 .csrf(AbstractHttpConfigurer::disable)
 //                .sessionManagement(customizer -> customizer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(registry -> {
-                    registry.requestMatchers("/home", "/product", "/product/**", "/users/register", "/h2-console/**").permitAll();
+//                    registry.requestMatchers(HttpMethod.POST, "/product/search").permitAll(); // Permitir todas as requisições POST para este endpoint
+//                    registry.requestMatchers(HttpMethod.GET, "/product/search").permitAll(); // Permitir todas as requisições GET para este endpoint
+                    registry.requestMatchers("/home", "/product", "/product/**", "/product/search" ,"/users/register", "/h2-console/**").permitAll();
+                    registry.requestMatchers(HttpMethod.DELETE, "/**").permitAll();
+                    registry.requestMatchers(HttpMethod.PUT, "/**").permitAll();
+                    registry.requestMatchers(HttpMethod.POST, "/**").permitAll();
+                    registry.requestMatchers(HttpMethod.GET, "/**").permitAll();
+                    registry.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll();
+//                    registry.requestMatchers(HttpMethod.POST, "/**").permitAll();
+//                    registry.requestMatchers(HttpMethod.GET, "/**").permitAll();
                     registry.requestMatchers("/admin/**").hasRole("ADMIN");
                     registry.requestMatchers("/user/**").hasRole("USER");
                     registry.requestMatchers("/shoppingList/**", "/price/**", "/users/**").authenticated();
+//                    registry.anyRequest().authenticated();
                 })
 //                .formLogin(httpSecurityFormLoginConfigurer -> httpSecurityFormLoginConfigurer
 //                        .loginPage("/login")

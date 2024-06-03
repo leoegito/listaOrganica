@@ -5,9 +5,10 @@ import com.fasterxml.jackson.annotation.*;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name="tb_product_list")
@@ -16,6 +17,7 @@ import java.util.Set;
 @EqualsAndHashCode(exclude = "listItems")
 @Getter
 @Setter
+//@NotFound(action = NotFoundAction.IGNORE)
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class ProductList {
 
@@ -28,12 +30,16 @@ public class ProductList {
 //    @ManyToMany(fetch = FetchType.LAZY)
 //    @Nullable
 //    private Set<Product> products = new HashSet<>();
-    @ManyToMany(fetch = FetchType.LAZY)
+//    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    //TESTE DE SIMPLIFICAÇÃO DE RELACIONAMENTOS 02/06 - mappedBy = id.productList
+    @OneToMany(mappedBy = "id.productList", cascade = CascadeType.ALL, orphanRemoval = true)
     @Nullable
 //    @JsonBackReference
     @JsonIdentityReference(alwaysAsId = true) // Adicione esta linha
-    @JsonProperty("listItems") // Adicione esta linha
-    private Set<ListItem> listItems = new HashSet<>();
+//    @JsonProperty("listItems") // Adicione esta linha
+//    @NotFound(action = NotFoundAction.IGNORE)
+//    private Set<ListItem> listItems = new LinkedHashSet<>();
+    private List<ListItem> listItems = new LinkedList<>();
 
     //Maybe its better to just store the two results in two attributes
 

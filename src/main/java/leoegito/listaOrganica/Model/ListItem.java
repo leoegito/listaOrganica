@@ -19,9 +19,25 @@ public class ListItem {
 //    @GeneratedValue(strategy = GenerationType.IDENTITY)
 //    private Long id;
 
+//    Antes de 02/06
     @EmbeddedId
     private ListItemPK id = new ListItemPK();
 
+    //TESTES DE SIMPLIFICAÇÃO DE RELACIONAMENTO - 02/06
+//    @EmbeddedId
+//    private Long id;
+
+//    @ManyToOne
+////    @MapsId("productListId")
+//    @JoinColumn(name = "product_list_id")
+//    private ProductList productList;
+//
+//    @ManyToOne
+////    @MapsId("productId")
+//    @JoinColumn(name = "product_id")
+//    private Product product;
+
+    //FIM DOS TESTES 02/06
     private Integer quantity;
     private Double price;
 

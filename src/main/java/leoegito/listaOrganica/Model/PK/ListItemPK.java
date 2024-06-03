@@ -1,6 +1,8 @@
 package leoegito.listaOrganica.Model.PK;
 
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import leoegito.listaOrganica.Model.Product;
 import leoegito.listaOrganica.Model.ProductList;
@@ -15,6 +17,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @EqualsAndHashCode
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = Product.class)
 public class ListItemPK implements Serializable {
 
 //    @Id
@@ -26,7 +29,7 @@ public class ListItemPK implements Serializable {
     @JoinColumn(name = "product_list_id")
     private ProductList productList;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "product_id")
     private Product product;
 
