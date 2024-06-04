@@ -1,6 +1,8 @@
 package leoegito.listaOrganica.Model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -33,8 +35,10 @@ public class MyUser implements Serializable {
     private String fullname;
     private String email;
     private String phone;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String passwordHash;
-    //Authentication will be implemented in Service Class
+    //Authentication will be implemented in Service and Contoller Class
 
     @Nullable
     private String zipCode;

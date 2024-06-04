@@ -1,6 +1,9 @@
 package leoegito.listaOrganica.Controller;
 
+import leoegito.listaOrganica.Model.ListItem;
 import leoegito.listaOrganica.Model.Price;
+import leoegito.listaOrganica.Model.Product;
+import leoegito.listaOrganica.Model.ProductList;
 import leoegito.listaOrganica.Repository.ProductRepository;
 import leoegito.listaOrganica.Service.Exceptions.ResourceNotFoundException;
 import leoegito.listaOrganica.Service.PriceService;
@@ -42,6 +45,21 @@ public class PriceController {
     public ResponseEntity<Price> insertPriceToProduct(@PathVariable(value = "product_id") Long productID, @RequestBody Price price){
 
         Price tempPrice = this.priceService.insert(productID, price);
+
+        Product proxyProduct = this.productService.findByID(productID);
+
+//        List<ProductList> proxyProductList = ;
+
+        for(ListItem listItem : proxyProduct.getListItems()){
+            if(listItem.getId().getProduct().getId() == productID){
+                System.out.println("LISTITEM ID: " + listItem.getId().getProduct().getId());
+                System.out.println("ProductID: " + productID);
+                listItem.setPrice(proxyProduct.getMedian());
+                System.out.println("proxyProduct MEDIAN: " + proxyProduct.getMedian());
+                System.out.println("listItem PRICE: " + listItem.getPrice());
+                proxyProduct.setUserPrice(price.getPriceValue());
+            }
+        }
 
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(tempPrice.getId()).toUri();

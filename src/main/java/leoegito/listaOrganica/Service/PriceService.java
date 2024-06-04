@@ -36,6 +36,7 @@ public class PriceService {
         Price temp = this.productRepository.findById(productID).map(
                 product -> {
                     product.getPrices().add(price);
+                    product.setUserPrice(price.getPriceValue());
                     return this.save(price);
                 }).orElseThrow(
                 () -> new ResourceNotFoundException(productID)

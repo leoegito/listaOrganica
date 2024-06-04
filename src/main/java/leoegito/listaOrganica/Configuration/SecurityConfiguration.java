@@ -64,15 +64,13 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(registry -> {
 //                    registry.requestMatchers(HttpMethod.POST, "/product/search").permitAll(); // Permitir todas as requisições POST para este endpoint
 //                    registry.requestMatchers(HttpMethod.GET, "/product/search").permitAll(); // Permitir todas as requisições GET para este endpoint
+                    registry.requestMatchers("/console/**").hasRole("ADMIN");
                     registry.requestMatchers("/home", "/product", "/product/**", "/product/search" ,"/users/register", "/h2-console/**").permitAll();
                     registry.requestMatchers(HttpMethod.DELETE, "/**").permitAll();
                     registry.requestMatchers(HttpMethod.PUT, "/**").permitAll();
                     registry.requestMatchers(HttpMethod.POST, "/**").permitAll();
                     registry.requestMatchers(HttpMethod.GET, "/**").permitAll();
                     registry.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll();
-//                    registry.requestMatchers(HttpMethod.POST, "/**").permitAll();
-//                    registry.requestMatchers(HttpMethod.GET, "/**").permitAll();
-                    registry.requestMatchers("/admin/**").hasRole("ADMIN");
                     registry.requestMatchers("/user/**").hasRole("USER");
                     registry.requestMatchers("/shoppingList/**", "/price/**", "/users/**").authenticated();
 //                    registry.anyRequest().authenticated();

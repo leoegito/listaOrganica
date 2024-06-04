@@ -36,6 +36,15 @@ public class ProductListController {
     @GetMapping(value = "/{id}")
     public ResponseEntity<ProductList> findByID(@PathVariable Long id){
         ProductList obj = productListService.findByID(id);
+        for(ListItem listItem : obj.getListItems()){
+//            if(listItem.getPrice() != listItem.getId().getProduct().getMedian()){
+//                listItem.setPrice(listItem.getId().getProduct().getMedian());
+//            }
+            System.out.println("PRODUCTLIST - ListItem Price ANTES: " + listItem.getPrice());
+            System.out.println("PRODUCTLIST - ListItem Product MEDIAN ANTES: " + listItem.getId().getProduct().getMedian());
+            listItem.setPrice(listItem.getId().getProduct().getMedian());
+            System.out.println("PRODUCTLIST - ListItem Price DEPOIS: " + listItem.getPrice());
+        }
         return ResponseEntity.ok().body(obj);
     }
 

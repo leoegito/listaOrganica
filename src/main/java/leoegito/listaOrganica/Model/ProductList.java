@@ -32,7 +32,7 @@ public class ProductList {
 //    private Set<Product> products = new HashSet<>();
 //    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     //TESTE DE SIMPLIFICAÇÃO DE RELACIONAMENTOS 02/06 - mappedBy = id.productList
-    @OneToMany(mappedBy = "id.productList", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "id.productList", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Nullable
 //    @JsonBackReference
     @JsonIdentityReference(alwaysAsId = true) // Adicione esta linha

@@ -44,7 +44,7 @@ public class Product {
 //    @JsonManagedReference
     private Set<ListItem> listItems = new LinkedHashSet<>();
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     @JoinColumn(name = "product_id")
 //    @OneToMany
@@ -71,8 +71,18 @@ public class Product {
 
     //Methods
     public void addPrice(Price price) throws IllegalArgumentException{
-        if(price.getPriceValue() > 1.3 * this.getMaximumValue() || price.getPriceValue() < 0.7 * this.getMinimumValue()){
-            throw new IllegalArgumentException("Price is too high or too low.");
+        if(price.getPriceValue() < 0){
+            throw new IllegalArgumentException("Preço não pode ser negativo");
+        }
+        for(Price checkPrice : this.getPrices()){
+            if(checkPrice.getPriceValue() <= 0.0){
+                this.getPrices().remove(checkPrice);
+            }
+        }
+        if(this.getMinimumValue() > 0.0 || this.getMinimumValue() > 0.0){
+            if(price.getPriceValue() > 1.3 * this.getMaximumValue() || price.getPriceValue() < 0.7 * this.getMinimumValue()){
+                throw new IllegalArgumentException("Price is too high or too low.");
+            }
         }
 //        prices.add(new Price(price.getPriceValue(), this));
 

@@ -44,6 +44,18 @@ public class MyUserService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder = SecurityConfiguration.passwordEncoder();
 
 
+    public MyUser login(String username, String rawPassword) throws ResourceNotFoundException {
+        MyUser myUser = myUserRepository.findByUsername(username).orElseThrow(
+                () -> new UsernameNotFoundException(username)
+        );
+
+        if (passwordEncoder.matches(rawPassword, myUser.getPasswordHash())) {
+            return myUser;
+        } else {
+            throw new RuntimeException("Invalid password");
+        }
+    }
+
     public UserDto login(CredentialsDto credentialsDto) throws ResourceNotFoundException{
 //        String username = credentialsDto.username().toString();
 ////        Optional<MyUser> user = Optional.ofNullable(this.myUserRepository.findByUsername(credentialsDto.username()))
@@ -108,10 +120,25 @@ public class MyUserService implements UserDetailsService {
     }
 
     public MyUser update(Long id, MyUser user){
-        try{
-            this.myUserRepository.getReferenceById(id);
-            return this.myUserRepository.save(user);
-        } catch (EntityNotFoundException e){
+//        try{
+//            this.myUserRepository.getReferenceById(id);
+//            return this.myUserRepository.save(user);
+//        } catch (EntityNotFoundException e){
+//            throw new ResourceNotFoundException(id);
+//        }
+        try {
+            MyUser existingUser = myUserRepository.getReferenceById(id);
+            existingUser.setFullname(user.getFullname());
+            existingUser.setEmail(user.getEmail());
+            existingUser.setPhone(user.getPhone());
+            existingUser.setZipCode(user.getZipCode());
+            existingUser.setCity(user.getCity());
+            existingUser.setState(user.getState());
+            existingUser.setDistrict(user.getDistrict());
+            existingUser.setStreet(user.getStreet());
+            // Preservar a role original do usuário
+            return this.myUserRepository.save(existingUser);
+        } catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException(id);
         }
     }

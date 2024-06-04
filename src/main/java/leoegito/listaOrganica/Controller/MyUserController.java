@@ -2,10 +2,7 @@ package leoegito.listaOrganica.Controller;
 
 import leoegito.listaOrganica.Configuration.SecurityConfiguration;
 import leoegito.listaOrganica.Controller.Exceptions.InvalidPasswordException;
-import leoegito.listaOrganica.Model.MyUser;
-import leoegito.listaOrganica.Model.PasswordChangeRequest;
-import leoegito.listaOrganica.Model.Product;
-import leoegito.listaOrganica.Model.ProductList;
+import leoegito.listaOrganica.Model.*;
 import leoegito.listaOrganica.Repository.MyUserRepository;
 import leoegito.listaOrganica.Service.Exceptions.ResourceNotFoundException;
 import leoegito.listaOrganica.Service.MyUserService;
@@ -39,20 +36,29 @@ public class MyUserController {
 
     @PostMapping("/register")
     public MyUser createUser(@RequestBody MyUser user){
+//        String rawPassword = user.getPasswordHash();
+//        user.setPasswordHash(this.passwordEncoder.encode(rawPassword));
         user.setPasswordHash(this.passwordEncoder.encode(user.getPasswordHash()));
         return myUserRepository.save(user);
     }
 
-    @GetMapping("/list")
-    public ResponseEntity<List<MyUser>> getList(){
-        List<MyUser> myUsers = this.myUserService.findAll();
-        return ResponseEntity.ok().body(myUsers);
+    @PostMapping("/login")
+    public MyUser loginUser(@RequestBody MyUser user) {
+        // Autenticação do usuário
+        MyUser existingUser = myUserService.login(user.getUsername(), user.getPasswordHash());
+        return existingUser;
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<MyUser> getByID(@PathVariable("id") Long id) throws ResourceNotFoundException {
-        return ResponseEntity.ok(this.myUserService.findByID(id));
-    }
+//    @GetMapping("/list")
+//    public ResponseEntity<List<MyUser>> getList(){
+//        List<MyUser> myUsers = this.myUserService.findAll();
+//        return ResponseEntity.ok().body(myUsers);
+//    }
+
+//    @GetMapping("/{id}")
+//    public ResponseEntity<MyUser> getByID(@PathVariable("id") Long id) throws ResourceNotFoundException {
+//        return ResponseEntity.ok(this.myUserService.findByID(id));
+//    }
 
     @PutMapping("/{id}/productList")
     public ResponseEntity<MyUser> addProductListToMyUser(@PathVariable Long id, @RequestBody ProductList productList) {
@@ -65,22 +71,6 @@ public class MyUserController {
         return ResponseEntity.ok(myUserService.addProductListToMyUser(id, productList));
     }
 
-    //TODO - Deletar lista inteira
-//    @DeleteMapping("/{id}/productList/{productListID}")
-//    public void deleteProductList(@PathVariable Long id, @PathVariable Long productListID) {
-//        ProductList productList = this.productListService.findByID(productListID);
-//        return ResponseEntity.ok(myUserService.addProductListToMyUser(id, productList));
-//    }
-
-    //TODO - Deletar apenas um listItem
-    // A deleção deve ser feita apenas dentro da conta do usuário,
-    // não afetando a lista original, que pode ser uma receita
-//    @DeleteMapping("{id}/productList/{productListID}")
-//    public void deleteProductListFromUser(@PathVariable Long id, @PathVariable Long productListID){
-//        this.myUserService.removeList(id, productListID);
-//    }
-
-
     @GetMapping("/{id}/productList/list")
     public ResponseEntity<List<ProductList>> getProductLists(@PathVariable Long id){
         return ResponseEntity.ok(myUserService.getAllProductLists(id));
@@ -88,6 +78,13 @@ public class MyUserController {
 
     @GetMapping("/{userID}/productList/{listID}")
     public ResponseEntity<ProductList> getProductList(@PathVariable Long userID, @PathVariable Long listID){
+        ProductList obj = productListService.findByID(listID);
+        for(ListItem listItem : obj.getListItems()){
+            System.out.println("PRODUCTLIST - ListItem Price ANTES: " + listItem.getPrice());
+            System.out.println("PRODUCTLIST - ListItem Product MEDIAN ANTES: " + listItem.getId().getProduct().getMedian());
+            listItem.setPrice(listItem.getId().getProduct().getMedian());
+            System.out.println("PRODUCTLIST - ListItem Price DEPOIS: " + listItem.getPrice());
+        }
         return ResponseEntity.ok(myUserService.getProductList(userID,listID));
     }
 
