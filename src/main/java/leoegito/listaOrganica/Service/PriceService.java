@@ -35,7 +35,22 @@ public class PriceService {
     public Price insert(Long productID, Price price){
         Price temp = this.productRepository.findById(productID).map(
                 product -> {
-                    product.getPrices().add(price);
+//                    product.getPrices().add(price);
+                    product.addPrice(price);
+                    product.setUserPrice(price.getPriceValue());
+                    return this.save(price);
+                }).orElseThrow(
+                () -> new ResourceNotFoundException(productID)
+        );
+        return temp;
+    }
+
+    public Price insertAdmin(Long productID, Price price){
+        Price temp = this.productRepository.findById(productID).map(
+                product -> {
+//                    product.getPrices().add(price);
+//                    product.addPrice(price);
+                    product.enforceAddPrice(price.getPriceValue());
                     product.setUserPrice(price.getPriceValue());
                     return this.save(price);
                 }).orElseThrow(

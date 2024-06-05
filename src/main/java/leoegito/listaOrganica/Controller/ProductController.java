@@ -49,11 +49,11 @@ public class ProductController {
         return ResponseEntity.created(uri).build();
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Product> update(@PathVariable("id") Long id, @RequestBody Product product){
-        Product obj = this.productService.update(id, product);
-        return ResponseEntity.ok().body(obj);
-    }
+//    @PutMapping("/{id}")
+//    public ResponseEntity<Product> update(@PathVariable("id") Long id, @RequestBody Product product){
+//        Product obj = this.productService.update(id, product);
+//        return ResponseEntity.ok().body(obj);
+//    }
 
     @GetMapping("/search")
     public ResponseEntity<List<Product>> searchProducts(@RequestParam String searchName){

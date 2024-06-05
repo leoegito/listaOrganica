@@ -32,8 +32,10 @@ public class MyUser implements Serializable {
 
     private String role;
     private String username;
+    @Nullable
     private String fullname;
     private String email;
+    @Nullable
     private String phone;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

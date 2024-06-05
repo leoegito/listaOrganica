@@ -80,7 +80,7 @@ public class Product {
             }
         }
         if(this.getMinimumValue() > 0.0 || this.getMinimumValue() > 0.0){
-            if(price.getPriceValue() > 1.3 * this.getMaximumValue() || price.getPriceValue() < 0.7 * this.getMinimumValue()){
+            if(price.getPriceValue() > 1.4 * this.getMaximumValue() || price.getPriceValue() < 0.6 * this.getMinimumValue()){
                 throw new IllegalArgumentException("Price is too high or too low.");
             }
         }

@@ -9,6 +9,7 @@ import leoegito.listaOrganica.Service.Exceptions.ResourceNotFoundException;
 import leoegito.listaOrganica.Service.PriceService;
 import leoegito.listaOrganica.Service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -44,19 +45,22 @@ public class PriceController {
     @PostMapping("/product/{product_id}")
     public ResponseEntity<Price> insertPriceToProduct(@PathVariable(value = "product_id") Long productID, @RequestBody Price price){
 
-        Price tempPrice = this.priceService.insert(productID, price);
-
         Product proxyProduct = this.productService.findByID(productID);
 
-//        List<ProductList> proxyProductList = ;
+        try{
+            proxyProduct.addPrice(price);
+        } catch (IllegalArgumentException exception){
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(price);
+        }
+
+        Price tempPrice = this.priceService.insert(productID, price);
 
         for(ListItem listItem : proxyProduct.getListItems()){
             if(listItem.getId().getProduct().getId() == productID){
-                System.out.println("LISTITEM ID: " + listItem.getId().getProduct().getId());
-                System.out.println("ProductID: " + productID);
+
                 listItem.setPrice(proxyProduct.getMedian());
-                System.out.println("proxyProduct MEDIAN: " + proxyProduct.getMedian());
-                System.out.println("listItem PRICE: " + listItem.getPrice());
+
+                proxyProduct.addPrice(price);
                 proxyProduct.setUserPrice(price.getPriceValue());
             }
         }
