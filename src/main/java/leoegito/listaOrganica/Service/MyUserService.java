@@ -3,7 +3,6 @@ package leoegito.listaOrganica.Service;
 import jakarta.persistence.EntityNotFoundException;
 import leoegito.listaOrganica.Configuration.SecurityConfiguration;
 import leoegito.listaOrganica.Controller.Exceptions.InvalidPasswordException;
-import leoegito.listaOrganica.Controller.Exceptions.StandardError;
 import leoegito.listaOrganica.DTO.CredentialsDto;
 import leoegito.listaOrganica.DTO.UserDto;
 import leoegito.listaOrganica.Mappers.UserMapper;
@@ -12,7 +11,6 @@ import leoegito.listaOrganica.Model.PasswordChangeRequest;
 import leoegito.listaOrganica.Model.ProductList;
 import leoegito.listaOrganica.Repository.MyUserRepository;
 import leoegito.listaOrganica.Service.Exceptions.DatabaseException;
-import leoegito.listaOrganica.Service.Exceptions.NotAuthorizedException;
 import leoegito.listaOrganica.Service.Exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -26,7 +24,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.io.Console;
 import java.nio.CharBuffer;
 import java.util.List;
 import java.util.Optional;
@@ -57,11 +54,7 @@ public class MyUserService implements UserDetailsService {
     }
 
     public UserDto login(CredentialsDto credentialsDto) throws ResourceNotFoundException{
-//        String username = credentialsDto.username().toString();
-////        Optional<MyUser> user = Optional.ofNullable(this.myUserRepository.findByUsername(credentialsDto.username()))
-////                .orElseThrow(() -> new UsernameNotFoundException(username));
-//        Optional<MyUser> myUser = this.myUserRepository.findByUsername(credentialsDto.username());
-////        user.orElseThrow(() -> new ResourceNotFoundException("Usuário não existe"));
+
         MyUser myUser = myUserRepository.findByUsername(credentialsDto.username()).orElseThrow(
                 () -> new UsernameNotFoundException(credentialsDto.username())
         );
@@ -91,21 +84,14 @@ public class MyUserService implements UserDetailsService {
         MyUser user = myUserRepository.findByUsername(username).orElseThrow(
                 () -> new UsernameNotFoundException(username)
         );
-//        if(user.isEmpty()){
-//            throw new UsernameNotFoundException(username);
-//        }
+
         MyUser loadedMyUser = user;
         return org.springframework.security.core.userdetails.User.builder()
                 .username(loadedMyUser.getUsername())
                 .password(loadedMyUser.getPasswordHash())
                 .roles(this.getRoles(loadedMyUser))
                 .build();
-//        return org.springframework.security.core.userdetails.User.builder()
-//                .username(user.get().getUsername())
-//                .password(user.get().getPasswordHash())
-//                .roles(user.get().getRole())
-//                .build();
-//    }
+
     }
 
     public String[] getRoles(MyUser myUser){
@@ -120,12 +106,7 @@ public class MyUserService implements UserDetailsService {
     }
 
     public MyUser update(Long id, MyUser user){
-//        try{
-//            this.myUserRepository.getReferenceById(id);
-//            return this.myUserRepository.save(user);
-//        } catch (EntityNotFoundException e){
-//            throw new ResourceNotFoundException(id);
-//        }
+
         try {
             MyUser existingUser = myUserRepository.getReferenceById(id);
             existingUser.setFullname(user.getFullname());
@@ -171,65 +152,21 @@ public class MyUserService implements UserDetailsService {
     public MyUser addProductListToMyUser(Long id, ProductList productList) {
         MyUser myUser = myUserRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("MyUser not found"));
         myUser.getProductLists().add(productList);
-//        productList.setMyUser(myUser);
         //Better not to return the entire user... Work on it later.
         return myUserRepository.save(myUser);
     }
 
-//    public void removeList(Long id, Long productListID){
-//        MyUser user = this.myUserRepository.findById(id).orElseThrow(
-//                () -> new ResourceNotFoundException(id)
-//        );
-//        user.get
-//    }
-
-    //Working on it
-//    public MyUser updatePassword(Long id, String hashPassword, String authToken){
-//        if(authToken != this.myUserRepository.getReferenceById(id)){
-//            throw new NotAuthorizedException();
-//        }
-//        try{
-//            MyUser user = this.myUserRepository.getReferenceById(id);
-//            user.setPasswordHash(hashPassword);
-//            return this.myUserRepository.save(user);
-//        } catch (EntityNotFoundException e){
-//            throw new ResourceNotFoundException(id);
-//        }
-//    }
-//    public String changeUserPassword(String passwordChangeRequest) {
-//        Authentication currentUser = SecurityContextHolder.getContext().getAuthentication();
-//        String username = currentUser.getName();
-//
-//        UserDetails userDetails = this.loadUserByUsername(username);
-//        if (!passwordEncoder.matches(passwordChangeRequest.getOldPassword(), userDetails.getPassword())) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Senha atual incorreta");
-//        }
-//        if(oldPasswordValidation(userDetails, userDetails.getPassword()))
-//
-//        User user = userRepository.findByUsername(username);
-//        user.setPassword(passwordEncoder.encode(passwordChangeRequest.getNewPassword()));
-//        userRepository.save(user);
-//
-//        return ResponseEntity.ok("Senha alterada com sucesso");
-//    }
 
     public String changeUserPassword(PasswordChangeRequest passwordChangeRequest) throws InvalidPasswordException {
         Authentication currentUser = SecurityContextHolder.getContext().getAuthentication();
         String username = currentUser.getName();
-        //Debug
-//      System.out.println("Username:" +username);
 
         MyUser user = this.myUserRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username));
         if (!oldPasswordValidation(user, passwordChangeRequest.getOldPassword())) {
             throw new InvalidPasswordException("Senha antiga incorreta.", HttpStatus.BAD_REQUEST);
         }
 
-        //Debug
-//      System.out.println(passwordChangeRequest.toString());
         user.setPasswordHash(passwordEncoder.encode(passwordChangeRequest.getNewPassword()));
-
-        //Debug
-//      System.out.println(user.toString());
 
         this.myUserRepository.save(user);
 

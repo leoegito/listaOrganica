@@ -14,7 +14,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @CrossOrigin(origins = "http://localhost:4200", maxAge = 3600)
 @RestController
@@ -37,9 +36,6 @@ public class ProductListController {
     public ResponseEntity<ProductList> findByID(@PathVariable Long id){
         ProductList obj = productListService.findByID(id);
         for(ListItem listItem : obj.getListItems()){
-//            if(listItem.getPrice() != listItem.getId().getProduct().getMedian()){
-//                listItem.setPrice(listItem.getId().getProduct().getMedian());
-//            }
             System.out.println("PRODUCTLIST - ListItem Price ANTES: " + listItem.getPrice());
             System.out.println("PRODUCTLIST - ListItem Product MEDIAN ANTES: " + listItem.getId().getProduct().getMedian());
             listItem.setPrice(listItem.getId().getProduct().getMedian());
@@ -56,9 +52,6 @@ public class ProductListController {
         return ResponseEntity.created(uri).build();
     }
 
-//    @PostMapping("/product/{id}")
-//    public ResponseEntity<ProductList> insertProduct(){}
-
     @PostMapping("/{id}/add-product")
     public ResponseEntity<ProductList> addProductToList(@PathVariable(value = "id") Long id, @RequestBody Product product){
         Optional<ProductList> optionalProductList = productListService.insertProduct(id, product);
@@ -74,18 +67,6 @@ public class ProductListController {
         list.getListItems().add(listItem);
         return ResponseEntity.ok().body(list);
     }
-
-//    @PutMapping("/{id}/changeQuantity")
-//    public ResponseEntity<ProductList> changeQuantity(@PathVariable Long id, @RequestBody ListItem listItem){
-//        ProductList productList = this.productListService.findByID(id);
-//        Set<ListItem> items = productList.getListItems();
-//        for(ListItem item : items){
-//            if(item.getId().getProduct().getId() == listItem.getProduct().getId()){
-//                item.setQuantity((item.getQuantity()));
-//            }
-//        }
-//        return ResponseEntity.ok().body(productList);
-//    }
 
     @PutMapping("/{id}/addQuantity")
     public ResponseEntity<ProductList> changeQuantity(@PathVariable Long id, @RequestBody Product product){

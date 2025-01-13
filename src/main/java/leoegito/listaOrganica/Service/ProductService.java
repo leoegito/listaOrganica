@@ -38,14 +38,6 @@ public class ProductService {
     }
 
     public Product update(Long id, Product product){
-        //TODO - verify if id exists
-        //** Old
-        //** Product updatedProduct = this.productRepository.getReferenceById(id);
-        //** return this.productRepository.save(product);
-
-        //Instead of using another method to check and save data, here we'll use
-        //the natural function of JPA getReferenceById, save and the
-        //EntityNotFoundException catch error.
         try{
             this.productRepository.getReferenceById(id);
             return this.productRepository.save(product);

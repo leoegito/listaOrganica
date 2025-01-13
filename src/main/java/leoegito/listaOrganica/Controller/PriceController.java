@@ -3,7 +3,6 @@ package leoegito.listaOrganica.Controller;
 import leoegito.listaOrganica.Model.ListItem;
 import leoegito.listaOrganica.Model.Price;
 import leoegito.listaOrganica.Model.Product;
-import leoegito.listaOrganica.Model.ProductList;
 import leoegito.listaOrganica.Repository.ProductRepository;
 import leoegito.listaOrganica.Service.Exceptions.ResourceNotFoundException;
 import leoegito.listaOrganica.Service.PriceService;

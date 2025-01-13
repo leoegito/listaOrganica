@@ -22,11 +22,6 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-//    @Autowired
-//    public ProductController(ProductService productService){
-//        this.productService = productService;
-//    }
-
     @GetMapping("/list")
     public ResponseEntity<List<Product>> getList(){
         List<Product> productList = this.productService.findAll();
@@ -35,9 +30,6 @@ public class ProductController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Product> getByID(@PathVariable("id") Long id) throws ResourceNotFoundException{
-//        return ResponseEntity.ok(this.productService.findByID(id).orElseThrow(
-//                () -> new ResourceNotFoundException("Product not found.")
-//        ));
         return ResponseEntity.ok(this.productService.findByID(id));
     }
 
@@ -49,18 +41,9 @@ public class ProductController {
         return ResponseEntity.created(uri).build();
     }
 
-//    @PutMapping("/{id}")
-//    public ResponseEntity<Product> update(@PathVariable("id") Long id, @RequestBody Product product){
-//        Product obj = this.productService.update(id, product);
-//        return ResponseEntity.ok().body(obj);
-//    }
 
     @GetMapping("/search")
     public ResponseEntity<List<Product>> searchProducts(@RequestParam String searchName){
-        // Mock response for testing
-//        List<Product> products = new ArrayList<>();
-//        products.add(new Product(1L, "Maçã", "Maçã Orgânica", 0.0, 0.0, null, null));
-//        products.add(new Product(2L, "Banana", "Banana Orgânica", 0.0, 0.0, null, null));
         List<Product> foundProducts = productService.searchProducts(searchName);
         if(foundProducts.isEmpty()){
             return ResponseEntity.noContent().build();
@@ -69,7 +52,7 @@ public class ProductController {
     }
 
 
-    // Novo endpoint para receber o parâmetro de pesquisa como JSON
+    // Endpoint para receber o parâmetro de pesquisa como JSON
     @PostMapping("/json/search")
     public List<Product> searchProducts(@RequestBody SearchRequest searchRequest) {
         String query = searchRequest.getQuery();
@@ -84,10 +67,6 @@ public class ProductController {
         return products;
     }
 
-    //    @GetMapping("/search")
-//    public ResponseEntity<List<Product>> searchProduct(@RequestParam("searchName") String searchName){
-//        return ResponseEntity.ok(productService.searchProducts(searchName));
-//    }
 
 }
 

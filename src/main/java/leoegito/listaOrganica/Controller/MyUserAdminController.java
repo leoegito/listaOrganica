@@ -77,7 +77,6 @@ public class MyUserAdminController {
 
     @PutMapping("/product/{id}")
     public ResponseEntity<Product> update(@PathVariable("id") Long id, @RequestBody Product product){
-//        Product obj = this.productService.update(id, product);
         Product obj = this.productService.findByID(id);
         String newName = product.getName();
         String newDescription = product.getDescription();

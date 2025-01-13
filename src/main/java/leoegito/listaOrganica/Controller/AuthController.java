@@ -2,7 +2,6 @@ package leoegito.listaOrganica.Controller;
 
 import leoegito.listaOrganica.DTO.CredentialsDto;
 import leoegito.listaOrganica.DTO.UserDto;
-import leoegito.listaOrganica.Model.MyUser;
 import leoegito.listaOrganica.Service.MyUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

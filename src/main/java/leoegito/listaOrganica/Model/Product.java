@@ -1,6 +1,9 @@
 package leoegito.listaOrganica.Model;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -15,8 +18,7 @@ import java.util.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = "listItems")//abaixo é o correto
-//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = Product.class)
+@EqualsAndHashCode(exclude = "listItems")
 @JsonIdentityReference(alwaysAsId = false)
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Product {
@@ -37,22 +39,13 @@ public class Product {
     private Double userPrice = 0.0;
 
     @OneToMany(mappedBy = "id.product")
-//    @JsonManagedReference
-//    @JsonBackReference
-//    @JsonIdentityReference(alwaysAsId = true) // Adicione esta linha
+//    @JsonIdentityReference(alwaysAsId = true) //
     @JsonIgnore
-//    @JsonManagedReference
     private Set<ListItem> listItems = new LinkedHashSet<>();
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     @JoinColumn(name = "product_id")
-//    @OneToMany
-//    @JoinTable(
-//            name = "PRODUCT_PRICE",
-//            joinColumns = {@JoinColumn(name="product_id", referencedColumnName = "product_id")},
-//            inverseJoinColumns = {@JoinColumn(name = "price_id", referencedColumnName = "price_id", unique = true)}
-//    )
     private SortedSet<Price> prices = new TreeSet<>();
 
     public Product(String name, String description, Double userPrice){
@@ -60,11 +53,9 @@ public class Product {
         this.description = description;
         if(userPrice != null){
             this.userPrice = userPrice;
-//            this.prices.add(new Price(userPrice, this));
             this.addPrice(new Price(this.userPrice));
         } else {
             this.userPrice = 0.0;
-//            this.addPrice(new Price(0.0, this));
             this.enforceAddPrice(this.userPrice);
         }
     }
@@ -80,24 +71,19 @@ public class Product {
             }
         }
         if(this.getMinimumValue() > 0.0 || this.getMinimumValue() > 0.0){
-            if(price.getPriceValue() > 1.4 * this.getMaximumValue() || price.getPriceValue() < 0.6 * this.getMinimumValue()){
+            if(price.getPriceValue() > 2.0 * this.getMaximumValue() || price.getPriceValue() < 0.5 * this.getMinimumValue()){
                 throw new IllegalArgumentException("Price is too high or too low.");
             }
         }
-//        prices.add(new Price(price.getPriceValue(), this));
 
-//        prices.add(new Price(null, price.getPriceValue()));
-//        price.setProduct(this);
         prices.add(price);
-//        prices.add(new Price(null, price, this));
+
     }
 
     public void enforceAddPrice(Double price){
-//        prices.add(new Price(null, price, this));
-//        prices.add(new Price(price, this));
-//        prices.add(new Price(null, price));
+
         Price proxyPrice = new Price(price);
-//        proxyPrice.setProduct(this);
+
         prices.add(proxyPrice);
     }
 

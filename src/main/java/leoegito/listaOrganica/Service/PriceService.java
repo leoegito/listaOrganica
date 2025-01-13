@@ -35,7 +35,6 @@ public class PriceService {
     public Price insert(Long productID, Price price){
         Price temp = this.productRepository.findById(productID).map(
                 product -> {
-//                    product.getPrices().add(price);
                     product.addPrice(price);
                     product.setUserPrice(price.getPriceValue());
                     return this.save(price);
@@ -48,8 +47,6 @@ public class PriceService {
     public Price insertAdmin(Long productID, Price price){
         Price temp = this.productRepository.findById(productID).map(
                 product -> {
-//                    product.getPrices().add(price);
-//                    product.addPrice(price);
                     product.enforceAddPrice(price.getPriceValue());
                     product.setUserPrice(price.getPriceValue());
                     return this.save(price);
@@ -60,7 +57,6 @@ public class PriceService {
     }
 
     public Price update(Long id, Price price){
-        //TODO - verify if id exists
         try{
             this.priceRepository.getReferenceById(id);
             return this.priceRepository.save(price);

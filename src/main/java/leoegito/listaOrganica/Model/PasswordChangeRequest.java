@@ -12,9 +12,4 @@ public class PasswordChangeRequest {
     private String oldPassword;
     private String newPassword;
 
-    //Debug
-//    @Override
-//    public String toString() {
-//        return "oldPassword: " +this.getOldPassword() +" newPassword: " +this.getNewPassword();
-//    }
 }

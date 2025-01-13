@@ -3,9 +3,7 @@ package leoegito.listaOrganica.Service;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
 import leoegito.listaOrganica.Model.ListItem;
-//import leoegito.listaOrganica.Model.PK.ListItemPK;
 import leoegito.listaOrganica.Model.MyUser;
 import leoegito.listaOrganica.Model.Product;
 import leoegito.listaOrganica.Model.ProductList;
@@ -14,7 +12,6 @@ import leoegito.listaOrganica.Repository.MyUserRepository;
 import leoegito.listaOrganica.Repository.ProductListRepository;
 import leoegito.listaOrganica.Service.Exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -46,9 +43,6 @@ public class ProductListService {
     public ProductList findByID(Long id) {
         Optional<ProductList> obj = this.productListRepository.findById(id);
         return obj.get();
-//        return obj.orElseThrow(
-//                () -> new ResourceNotFoundException(id)
-//        );
     }
 
     public ProductList save(ProductList productList) {
@@ -63,7 +57,7 @@ public class ProductListService {
             throw new ResourceNotFoundException(id);
         }
     }
-    //CHATGPT
+
     public void delete(Long id) {
         ProductList productList = this.productListRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException(id)
@@ -90,62 +84,6 @@ public class ProductListService {
         this.productListRepository.delete(productList);
     }
 
-//    @Transactional - antigo
-//    public void delete(Long id){
-//        ProductList productList = this.productListRepository.findById(id).orElseThrow(
-//                ()-> new ResourceNotFoundException(id)
-//        );
-//        // Remover todas as associações ListItem
-//        for (ListItem listItem : productList.getListItems()) {
-//            listItem.getId().setProductList(null);
-//            listItem.getId().setProduct(null);
-////            listItem.getProductList().remove(productList); // Remover a associação do lado do ListItem
-////            listItem.setProductList(null);
-//        }
-//        productList.getListItems().clear(); // Limpar a coleção do lado do ProductList
-//        this.productListRepository.save(productList); // Salvar o ProductList para persistir a remoção das
-//        this.productListRepository.delete(productList);
-//    }
-//    @Transactional
-//    public void delete(Long id){
-//        ProductList productList = this.productListRepository.findById(id).orElseThrow(
-//                ()-> new ResourceNotFoundException(id)
-//        );
-//        // Remover todas as associações ListItem
-//        for (ListItem listItem : productList.getListItems()) {
-//            this.entityManager.remove(listItem);
-//            productList.getListItems().remove(listItem);
-//            listItem.setProductList(null);
-//        }
-//        this.productListRepository.delete(productList);
-//    }
-
-//    @Transactional
-//    public void delete(Long id){
-//        int numTentativas = 0;
-//        int MAX_TENTATIVAS = 5;
-//        while(numTentativas < MAX_TENTATIVAS) {
-//            try {
-//                ProductList productList = this.productListRepository.findById(id).orElseThrow(
-//                        ()-> new ResourceNotFoundException(id)
-//                );
-//                // Remover todas as associações ListItem
-//                for (ListItem listItem : productList.getListItems()) {
-//                    listItem.setProductList(null);
-//                    productList.getListItems().remove(listItem);
-//                    this.entityManager.remove(listItem);
-//                }
-//                this.entityManager.refresh(productList);
-//                this.productListRepository.delete(productList);
-//                break; // Se a operação foi bem-sucedida, saia do loop
-//            } catch (ObjectOptimisticLockingFailureException e) {
-//                numTentativas++; // Incrementa o contador de tentativas
-//                if (numTentativas >= MAX_TENTATIVAS) {
-//                    throw e; // Se excedeu o número máximo de tentativas, relance a exceção
-//                }
-//            }
-//        }
-//    }
 
     public Optional<ProductList> insertProduct(Long id, Product product) throws ResourceNotFoundException {
         Optional<ProductList> optionalProductList = productListRepository.findById(id);

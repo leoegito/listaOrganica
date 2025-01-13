@@ -17,7 +17,6 @@ public class WebConfig {
                 registry.addMapping("/**")
                         .allowCredentials(true)
                         .allowedOrigins("http://localhost:4200")
-//                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedMethods(HttpMethod.GET.name(),
                                 HttpMethod.POST.name(),
                                 HttpMethod.PUT.name(),
@@ -30,7 +29,6 @@ public class WebConfig {
                                 HttpHeaders.LOCATION,
                                 HttpHeaders.CONTENT_LOCATION
                                 );
-//                        .allowCredentials(true);
             }
         };
     }
